@@ -53,12 +53,12 @@ function App() {
 const [highlightedWord, setHighlightedWord] = useState('');
 
 // Función para manejar cambios en el área de texto
-const handleTextChange = (event) => {
+const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
   setText(event.target.value);
 };
 
 // Función para resaltar una palabra al pasar el mouse por encima
-const handleWordHighlight = (word) => {
+const handleWordHighlight = (word: string) => {
   setHighlightedWord(word);
 };
 
@@ -67,11 +67,11 @@ const handleWordUnhighlight = () => {
   setHighlightedWord('');
 };
 
-const removePunctuation = (word) => {
+const removePunctuation = (word: string) => {
   return word.replace(/[¿?¡!,\.'"]/g, '');
 };
 
-const onWordClickListener = (word) => {
+const onWordClickListener = (word: string) => {
   setWord(word)
   setIsModalOpen(true)
 }

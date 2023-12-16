@@ -1,7 +1,14 @@
-import React from 'react';
 import Modal from 'react-modal';
 
-function WordModal({ word, definition, isOpen, closeModal, className }) {
+interface ModalProps {
+    word: string
+    definition: string
+    isOpen: boolean
+    closeModal: any
+    className: string
+}
+
+function WordModal({ word, definition, isOpen, closeModal, className }:ModalProps) {
     return (
       <Modal
         className={className}
