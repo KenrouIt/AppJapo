@@ -1,20 +1,22 @@
+import { BrowserRouter} from 'react-router-dom'
+import Login from '../Login'
 import { useState, useEffect } from 'react'
 import './App.css'
-import hanamichiImg from './assets/hanamichi.jpg'
-import japonImg from './assets/japon.png'
+import hanamichiImg from '../../assets/hanamichi.jpg'
+import japonImg from '../../assets/japon.png'
 import './App.css';
-import Modal from './DefModal';
+import Modal from '../../DefModal';
 
 // import { useFetch } from './api/useFetch';
 function App() {
-  const [count, setCount] = useState(0);
-
+  const [] = useState(0);
+  
   // Usar estado local para rastrear el contenido del texto
   const [text, setText] = useState('');
-  const [url, setUrl] = useState('https://youtu.be/xnaYs20vr0I?si=1UzGR2OIVVRVQNQx');
+  const [url] = useState('https://youtu.be/xnaYs20vr0I?si=1UzGR2OIVVRVQNQx');
 
   const [word, setWord] = useState('')
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const [definition, setDefinition] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -79,6 +81,9 @@ const onWordClickListener = (word: string) => {
 
 return (
   <>
+    <BrowserRouter>
+      <Login />
+    </BrowserRouter>
     <div>
       <a href="https://youtu.be/dQw4w9WgXcQ?si=oWiKbvsS_-vc3-2d" target="_blank">
         <img src={japonImg} className="logo" alt="Vite logo" />
