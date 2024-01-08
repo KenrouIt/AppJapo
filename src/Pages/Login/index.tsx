@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import db from "../../DataBase/db";
 
 export function Login() {
   const navigate = useNavigate();
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   function onUserInput(e: React.FormEvent<HTMLInputElement>) {
     setUser(e.currentTarget.value);
@@ -15,15 +15,15 @@ export function Login() {
     setPassword(e.currentTarget.value);
   }
 
-  function onConfirmPasswordInput(e: React.FormEvent<HTMLInputElement>) {
-    setConfirmPassword(e.currentTarget.value);
+  function isValidUser() {
+    return db.some((entry) => entry.user === user && entry.password === password);
   }
 
   function handleLogin() {
-    if (password === confirmPassword) {
+    if (isValidUser()) {
       navigate("/Home");
     } else {
-      alert("Please, put the right password");
+      alert("Your name or password is incorrect. Please check it");
     }
   }
 
@@ -43,14 +43,6 @@ export function Login() {
           type="password"
           value={password}
           onInput={onPasswordInput}
-        />
-      </div>
-      <div>
-        <p>Confirm Password:</p>
-        <input
-          type="password"
-          value={confirmPassword}
-          onInput={onConfirmPasswordInput}
         />
       </div>
       <button onClick={handleLogin}>Login</button>

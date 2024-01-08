@@ -1,5 +1,3 @@
-import { BrowserRouter} from 'react-router-dom'
-import Login from '../Login'
 import { useState, useEffect } from 'react'
 import './App.css'
 import hanamichiImg from '../../assets/hanamichi.jpg'
