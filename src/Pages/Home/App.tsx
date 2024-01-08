@@ -81,9 +81,6 @@ const onWordClickListener = (word: string) => {
 
 return (
   <>
-    <BrowserRouter>
-      <Login />
-    </BrowserRouter>
     <div>
       <a href="https://youtu.be/dQw4w9WgXcQ?si=oWiKbvsS_-vc3-2d" target="_blank">
         <img src={japonImg} className="logo" alt="Vite logo" />

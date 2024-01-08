@@ -21,9 +21,9 @@ export function Login() {
 
   function handleLogin() {
     if (password === confirmPassword) {
-      navigate("/dashboard");
+      navigate("/Home");
     } else {
-      alert("Las contraseñas no coinciden. Por favor, inténtalo de nuevo.");
+      alert("Please, put the right password");
     }
   }
 
