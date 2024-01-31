@@ -4,11 +4,18 @@ import hanamichiImg from '../../assets/hanamichi.jpg'
 import japonImg from '../../assets/japon.png'
 import './App.css';
 import Modal from '../../DefModal';
+import { Navigate } from 'react-router-dom';
 
 // import { useFetch } from './api/useFetch';
 function App() {
   const [] = useState(0);
-  
+  const isLoggedIn = !!sessionStorage.getItem("user");
+  const user = sessionStorage.getItem("user");
+
+  if (!isLoggedIn) {
+    return <Navigate to="/Login" />;
+  }
+
   // Usar estado local para rastrear el contenido del texto
   const [text, setText] = useState('');
   const [url] = useState('https://youtu.be/xnaYs20vr0I?si=1UzGR2OIVVRVQNQx');
@@ -79,6 +86,7 @@ const onWordClickListener = (word: string) => {
 
 return (
   <>
+  <h1>Welcome: {user} </h1> 
     <div>
       <a href="https://youtu.be/dQw4w9WgXcQ?si=oWiKbvsS_-vc3-2d" target="_blank">
         <img src={japonImg} className="logo" alt="Vite logo" />

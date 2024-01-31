@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import db from "../../DataBase/db";
+import db from "../../DataBase/usersDb";
 
 export function Login() {
   const navigate = useNavigate();
@@ -21,6 +21,7 @@ export function Login() {
 
   function handleLogin() {
     if (isValidUser()) {
+      sessionStorage.setItem("user", user);
       navigate("/Home");
     } else {
       alert("Your name or password is incorrect. Please check it");
