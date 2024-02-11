@@ -1,14 +1,12 @@
-import { useState, useEffect } from 'react'
-import './App.css'
-import hanamichiImg from '../../assets/hanamichi.jpg'
-import japonImg from '../../assets/japon.png'
+import { useState, useEffect } from 'react';
 import './App.css';
+import hanamichiImg from '../../assets/hanamichi.jpg';
+import japonImg from '../../assets/japon.png';
 import Modal from '../../DefModal';
 import { Navigate } from 'react-router-dom';
+import db, { User } from '../../DataBase/usersDb';
 
-// import { useFetch } from './api/useFetch';
 function App() {
-  const [] = useState(0);
   const isLoggedIn = !!sessionStorage.getItem("user");
   const user = sessionStorage.getItem("user");
 
@@ -16,14 +14,13 @@ function App() {
     return <Navigate to="/Login" />;
   }
 
-  // Usar estado local para rastrear el contenido del texto
-  const [text, setText] = useState('');
-  const [url] = useState('https://youtu.be/xnaYs20vr0I?si=1UzGR2OIVVRVQNQx');
+  const [text, setText] = useState<string>('');
+  const [wordsLearned, setWordsLearned] = useState<string[]>([]);
 
-  const [word, setWord] = useState('')
-  const [, setIsLoading] = useState(false);
-  const [definition, setDefinition] = useState('')
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [word, setWord] = useState<string>('');
+  const [, setIsLoading] = useState<boolean>(false);
+  const [definition, setDefinition] = useState<string>('');
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     async function searchWord() {
@@ -35,10 +32,7 @@ function App() {
         const response = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + word);
         if (!response.ok) {
           const data = await response.json()
-
-          // console.log(2, data)
           setDefinition(data.message)
-          // throw new Error(`Error en la solicitud ${data.message}`);
           return
         }
         const data = await response.json();
@@ -55,6 +49,13 @@ function App() {
 
     searchWord()
   }, [word]);
+
+  useEffect(() => {
+    const userDb: User | undefined = db.find(entry => entry.user === user);
+    if (userDb) {
+      setWordsLearned(userDb.wordsLearned || []);
+    }
+  }, [user]);
 
 // Estado para rastrear la palabra resaltada
 const [highlightedWord, setHighlightedWord] = useState('');
@@ -79,9 +80,20 @@ const removePunctuation = (word: string) => {
 };
 
 const onWordClickListener = (word: string) => {
-  setWord(word)
-  setIsModalOpen(true)
-}
+  setWord(word);
+  setIsModalOpen(true);
+  setWordsLearned(prevState => {
+    const newState = [...prevState, word];
+    const updatedDb = db.map(entry => {
+      if (entry.user === user) {
+        return { ...entry, wordsLearned: newState };
+      }
+      return entry;
+    });
+    sessionStorage.setItem("usersDb", JSON.stringify(updatedDb));
+    return newState;
+  });
+};
 
 
 return (
@@ -91,12 +103,22 @@ return (
       <a href="https://youtu.be/dQw4w9WgXcQ?si=oWiKbvsS_-vc3-2d" target="_blank">
         <img src={japonImg} className="logo" alt="Vite logo" />
       </a>
-      <a href={url} target="_blank">
+      <a target="_blank">
         <img src={hanamichiImg} className="logo react" alt="React logo" />
       </a>
     </div>
     <div>
       <h1>Aplicación de Japonés</h1>
+
+      <div className="words-learned-container">
+          <p>Palabras Aprendidas por el Usuario:</p>
+          <ul>
+            {wordsLearned.map((word, index) => (
+              <li key={index}>{word}</li>
+            ))}
+          </ul>
+        </div>
+
       <label htmlFor="textArea">Ingresa el texto que desees:</label><br></br>
       <textarea
         id="textArea"
