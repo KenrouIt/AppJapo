@@ -18,7 +18,15 @@ function App() {
   const [wordsLearned, setWordsLearned] = useState<string[]>(() => {
     const userWords = localStorage.getItem(`learnedWords_${user}`);
     return userWords ? JSON.parse(userWords) : [];
-  });
+    
+      //El wordsLearnes almacena un Array de Strings. 
+      //Se utiliza una función de inicialización para este estado que intenta obtener los datos desde el localStorage.
+      //Si hay datos guardados previamente, los parsea*1 desde JSON; de lo contrario, se inicializa el estado como un array vacío. 
+      //setWordsLearned es la función que se utilizará para actualizar este estado.
+
+      //*1 Parsear: Procesar una cadena de texto para convertirla en un formato que la computadora pueda entender y manipular de manera estructurada
+
+  }); 
 
   const [word, setWord] = useState<string>('');
   const [, setIsLoading] = useState<boolean>(false);
@@ -50,16 +58,16 @@ function App() {
   const onWordClickListener = (word: string) => {
     setWord(word);
     setIsModalOpen(true);
-    setWordsLearned(prevState => {
-      const newState = [...prevState, word];
-      const updatedDb = db.map(entry => {
-        if (entry.user === user) {
-          return { ...entry, wordsLearned: newState };
+    setWordsLearned(prevState => {                      //Actualiza las palabras aprendidas, aceptando el estado anteior como argumento.
+      const newState = [...prevState, word];            //Crea un newState copiando al prevState y agregando la palabra aprendida.
+      const updatedDb = db.map(entry => {               //Busca la entrada del usuario que esta en uso y agrega la palabra.
+        if (entry.user === user) {                      //Se usa sessionStorage para almacenar los datos de la sesion en JSON y
+          return { ...entry, wordsLearned: newState };  //se usa el localStorage con el newState para agregar las palabras aprendidas en JSON
         }
         return entry;
       });
       sessionStorage.setItem("usersDb", JSON.stringify(updatedDb));
-      localStorage.setItem(`learnedWords_${user}`, JSON.stringify(newState)); // Guardar palabras en localStorage asociadas al usuario
+      localStorage.setItem(`learnedWords_${user}`, JSON.stringify(newState));
       return newState;
     });
   };
@@ -101,11 +109,10 @@ function App() {
     useEffect(() => {
       const userDb: User | undefined = db.find(entry => entry.user === user);
       if (userDb) {
-        setWordsLearned(userDb.wordsLearned || []);
-      }
-      
-      const userWords = localStorage.getItem(`learnedWords_${user}`);
-      if (userWords) {
+        setWordsLearned(userDb.wordsLearned || []);                               //Busca un usuario que coincida con los datos del LogIn.
+      }                                                                           //Si encuentra a dicho usuario mostrara las palabras aprendidas del mismo.
+      const userWords = localStorage.getItem(`learnedWords_${user}`);             //Las palabras aprendidas se almacenan en localStorage utilizando "learnedWords_${user}".
+      if (userWords) {                                                            //Si hay palabras estas son almacenadas  en un JSON.
         setWordsLearned(JSON.parse(userWords));
       }
     }, [user]);
