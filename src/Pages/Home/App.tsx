@@ -3,7 +3,7 @@ import './App.css';
 import hanamichiImg from '../../assets/hanamichi.jpg';
 import japonImg from '../../assets/japon.png';
 import Modal from '../../DefModal';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import db, { User } from '../../DataBase/usersDb';
 
 function App() {
@@ -15,19 +15,67 @@ function App() {
   }
 
   const [text, setText] = useState<string>('');
-  const [wordsLearned, setWordsLearned] = useState<string[]>([]);
+  const [wordsLearned, setWordsLearned] = useState<string[]>(() => {
+    const userWords = localStorage.getItem(`learnedWords_${user}`);
+    return userWords ? JSON.parse(userWords) : [];
+  });
 
   const [word, setWord] = useState<string>('');
   const [, setIsLoading] = useState<boolean>(false);
   const [definition, setDefinition] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
+  // Estado para rastrear la palabra resaltada
+  const [highlightedWord, setHighlightedWord] = useState('');
+
+  // Función para manejar cambios en el área de texto
+  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setText(event.target.value);
+  };
+
+  // Función para resaltar una palabra al pasar el mouse por encima
+  const handleWordHighlight = (word: string) => {
+    setHighlightedWord(word);
+  };
+
+  // Función para desactivar el resaltado cuando el mouse se va
+  const handleWordUnhighlight = () => {
+    setHighlightedWord('');
+  };
+
+  const removePunctuation = (word: string) => {
+    return word.replace(/[¿?¡!,\.'"]/g, '');
+  };
+
+  const onWordClickListener = (word: string) => {
+    setWord(word);
+    setIsModalOpen(true);
+    setWordsLearned(prevState => {
+      const newState = [...prevState, word];
+      const updatedDb = db.map(entry => {
+        if (entry.user === user) {
+          return { ...entry, wordsLearned: newState };
+        }
+        return entry;
+      });
+      sessionStorage.setItem("usersDb", JSON.stringify(updatedDb));
+      localStorage.setItem(`learnedWords_${user}`, JSON.stringify(newState)); // Guardar palabras en localStorage asociadas al usuario
+      return newState;
+    });
+  };
+
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    sessionStorage.removeItem("user");
+    navigate('/Login');
+  };
+
   useEffect(() => {
     async function searchWord() {
       if(word === '') return
       setIsLoading(true);
       setDefinition('')
-    
+  
       try {
         const response = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + word);
         if (!response.ok) {
@@ -47,58 +95,25 @@ function App() {
       }
     }
 
-    searchWord()
-  }, [word]);
+      searchWord()
+    }, [word]);
 
-  useEffect(() => {
-    const userDb: User | undefined = db.find(entry => entry.user === user);
-    if (userDb) {
-      setWordsLearned(userDb.wordsLearned || []);
-    }
-  }, [user]);
-
-// Estado para rastrear la palabra resaltada
-const [highlightedWord, setHighlightedWord] = useState('');
-
-// Función para manejar cambios en el área de texto
-const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-  setText(event.target.value);
-};
-
-// Función para resaltar una palabra al pasar el mouse por encima
-const handleWordHighlight = (word: string) => {
-  setHighlightedWord(word);
-};
-
-// Función para desactivar el resaltado cuando el mouse se va
-const handleWordUnhighlight = () => {
-  setHighlightedWord('');
-};
-
-const removePunctuation = (word: string) => {
-  return word.replace(/[¿?¡!,\.'"]/g, '');
-};
-
-const onWordClickListener = (word: string) => {
-  setWord(word);
-  setIsModalOpen(true);
-  setWordsLearned(prevState => {
-    const newState = [...prevState, word];
-    const updatedDb = db.map(entry => {
-      if (entry.user === user) {
-        return { ...entry, wordsLearned: newState };
+    useEffect(() => {
+      const userDb: User | undefined = db.find(entry => entry.user === user);
+      if (userDb) {
+        setWordsLearned(userDb.wordsLearned || []);
       }
-      return entry;
-    });
-    sessionStorage.setItem("usersDb", JSON.stringify(updatedDb));
-    return newState;
-  });
-};
-
+      
+      const userWords = localStorage.getItem(`learnedWords_${user}`);
+      if (userWords) {
+        setWordsLearned(JSON.parse(userWords));
+      }
+    }, [user]);
 
 return (
   <>
   <h1>Welcome: {user} </h1> 
+  <button onClick={handleLogout}>Volver al Login</button>
     <div>
       <a href="https://youtu.be/dQw4w9WgXcQ?si=oWiKbvsS_-vc3-2d" target="_blank">
         <img src={japonImg} className="logo" alt="Vite logo" />
