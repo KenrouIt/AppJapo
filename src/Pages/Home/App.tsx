@@ -78,6 +78,17 @@ function App() {
     navigate('/Login');
   };
 
+  const removeWord = (wordToRemove: string) => {
+    const updatedWords = wordsLearned.filter(word => word !== wordToRemove);
+    setWordsLearned(updatedWords);
+    localStorage.setItem(`learnedWords_${user}`, JSON.stringify(updatedWords));
+  };
+
+  const handleLearnedWordClick = (word: string) => {
+  setWord(word);
+  setIsModalOpen(true);
+};
+
   useEffect(() => {
     async function searchWord() {
       if(word === '') return
@@ -136,9 +147,19 @@ return (
           <p>Palabras Aprendidas por el Usuario:</p>
           <ul>
             {wordsLearned.map((word, index) => (
-              <li key={index}>{word}</li>
+              <li key={index}>
+                <span
+                  className={highlightedWord === word ? 'highlighted' : ''}
+                  onMouseEnter={() => handleWordHighlight(word)}
+                  onMouseLeave={handleWordUnhighlight}
+                  onClick={() => handleLearnedWordClick(word)}
+                  style={{ cursor: 'pointer', color: 'green' }}
+                >
+                  {word}
+                </span>
+              </li>
             ))}
-          </ul>
+           </ul>
         </div>
 
       <label htmlFor="textArea">Ingresa el texto que desees:</label><br></br>
@@ -185,8 +206,14 @@ return (
         isOpen={isModalOpen}
         closeModal={() => setIsModalOpen(false)}
       />
+      {wordsLearned.map((word, index) => (
+    <li key={index}>
+    {word} 
+    <button onClick={() => removeWord(word)}>Eliminar</button>
+    </li>
+    ))}
   </>
-)
+  )
 }
 
 export default App;
