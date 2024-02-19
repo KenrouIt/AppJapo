@@ -4,11 +4,12 @@ interface ModalProps {
     word: string
     definition: string
     isOpen: boolean
-    closeModal: any
+    closeModal: (any)
     className: string
+    onAddWord: (any) 
 }
 
-function WordModal({ word, definition, isOpen, closeModal, className }:ModalProps) {
+function WordModal({ word, definition, isOpen, closeModal, className, onAddWord }: ModalProps ) {
     return (
       <Modal
         className={className}
@@ -16,9 +17,10 @@ function WordModal({ word, definition, isOpen, closeModal, className }:ModalProp
         onRequestClose={closeModal}
         contentLabel="Word Definition Modal"
       >
-        <h2>Definición de la palabra: {word}</h2>
+        <h2>Word Definition: {word}</h2>
         <p>{definition}</p>
-        <button onClick={closeModal}>Cerrar</button>
+        <button onClick={onAddWord}>Add word</button>
+        <button onClick={closeModal}>Close</button>
       </Modal>
     );
   }

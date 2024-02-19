@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import hanamichiImg from '../../assets/hanamichi.jpg';
 import japonImg from '../../assets/japon.png';
-import Modal from '../../DefModal';
+import WordModal from '../../DefModal';
 import { Navigate, useNavigate } from 'react-router-dom';
 import db, { User } from '../../DataBase/usersDb';
 
@@ -47,12 +47,15 @@ function App() {
   const onWordClickListener = (word: string) => {
     setWord(word);
     setIsModalOpen(true);
+  };
+
+  const addWord = () => {
     const newWordsLearned=new Set(wordsLearned)
     newWordsLearned.add(word)  
     setWordsLearned(newWordsLearned)
     storeUserData({wordsLearned: Array.from(newWordsLearned)})
     //localStorage.setItem(`learnedWords_${user}`, JSON.stringify(wordsLearned));
-  };
+  }
 
   function storeUserData(obj:any){
    const userData = JSON.parse(localStorage.getItem("userData")!)
@@ -126,10 +129,10 @@ return (
       </a>
     </div>
     <div>
-      <h1>Aplicación de Japonés</h1>
+      <h1>Japanese Aplication</h1>
 
       <div className="words-learned-container">
-          <p>Palabras Aprendidas por el Usuario:</p>
+          <p>Words Know by User:</p>
           <ul>
             {Array.from(wordsLearned).map((word, index) => (
               <li key={index}>
@@ -147,7 +150,7 @@ return (
            </ul>
         </div>
 
-      <label htmlFor="textArea">Ingresa el texto que desees:</label><br></br>
+      <label htmlFor="textArea">Enter here the text you want :</label><br></br>
       <textarea
         id="textArea"
         value={text}
@@ -157,7 +160,7 @@ return (
       />
 
       {/* TEXTO PARA INGRESAR LAS PALABRAS */}
-      <p>Texto ingresado:</p>
+      <p>Text Entered:</p>
       <div>
         {/* Divide el texto en palabras usando un espacio como delimitador y crea un nuevo array de palabras. */}
         {text.split(' ').map((word, index) => {
@@ -185,17 +188,18 @@ return (
       </div>
       {/*CONECTAR Y USAR LA API*/}
     </div>
-    <Modal
+    <WordModal
         className="modal-content"
         word={word}
         definition={definition}
         isOpen={isModalOpen}
         closeModal={() => setIsModalOpen(false)}
+        onAddWord={addWord}
       />
       {Array.from(wordsLearned).map((word, index) => (
     <li key={index}>
     {word} 
-    <button onClick={() => removeWord(word)}>Eliminar</button>
+    <button onClick={() => removeWord(word)}>Remove</button>
     </li>
     ))}
   </>
