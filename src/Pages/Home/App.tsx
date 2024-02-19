@@ -15,18 +15,7 @@ function App() {
   }
 
   const [text, setText] = useState<string>('');
-  const [wordsLearned, setWordsLearned] = useState<string[]>(() => {
-    const userWords = localStorage.getItem(`learnedWords_${user}`);
-    return userWords ? JSON.parse(userWords) : [];
-    
-      //El wordsLearnes almacena un Array de Strings. 
-      //Se utiliza una función de inicialización para este estado que intenta obtener los datos desde el localStorage.
-      //Si hay datos guardados previamente, los parsea*1 desde JSON; de lo contrario, se inicializa el estado como un array vacío. 
-      //setWordsLearned es la función que se utilizará para actualizar este estado.
-
-      //*1 Parsear: Procesar una cadena de texto para convertirla en un formato que la computadora pueda entender y manipular de manera estructurada
-
-  }); 
+  const [wordsLearned, setWordsLearned] = useState<Set <string>>(new Set());
 
   const [word, setWord] = useState<string>('');
   const [, setIsLoading] = useState<boolean>(false);
@@ -58,19 +47,18 @@ function App() {
   const onWordClickListener = (word: string) => {
     setWord(word);
     setIsModalOpen(true);
-    setWordsLearned(prevState => {                      //Actualiza las palabras aprendidas, aceptando el estado anteior como argumento.
-      const newState = [...prevState, word];            //Crea un newState copiando al prevState y agregando la palabra aprendida.
-      const updatedDb = db.map(entry => {               //Busca la entrada del usuario que esta en uso y agrega la palabra.
-        if (entry.user === user) {                      //Se usa sessionStorage para almacenar los datos de la sesion en JSON y
-          return { ...entry, wordsLearned: newState };  //se usa el localStorage con el newState para agregar las palabras aprendidas en JSON
-        }
-        return entry;
-      });
-      sessionStorage.setItem("usersDb", JSON.stringify(updatedDb));
-      localStorage.setItem(`learnedWords_${user}`, JSON.stringify(newState));
-      return newState;
-    });
+    const newWordsLearned=new Set(wordsLearned)
+    newWordsLearned.add(word)  
+    setWordsLearned(newWordsLearned)
+    storeUserData({wordsLearned: Array.from(newWordsLearned)})
+    //localStorage.setItem(`learnedWords_${user}`, JSON.stringify(wordsLearned));
   };
+
+  function storeUserData(obj:any){
+   const userData = JSON.parse(localStorage.getItem("userData")!)
+   const newUserData = {...userData, ...obj} 
+   localStorage.setItem("userData", JSON.stringify(newUserData))
+  }
 
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -79,10 +67,12 @@ function App() {
   };
 
   const removeWord = (wordToRemove: string) => {
-    const updatedWords = wordsLearned.filter(word => word !== wordToRemove);
+    const updatedWords = new Set(wordsLearned);
+    updatedWords.delete(wordToRemove);
     setWordsLearned(updatedWords);
-    localStorage.setItem(`learnedWords_${user}`, JSON.stringify(updatedWords));
+    localStorage.setItem(`learnedWords_${user}`, JSON.stringify(Array.from(updatedWords)));
   };
+  
 
   const handleLearnedWordClick = (word: string) => {
   setWord(word);
@@ -118,13 +108,8 @@ function App() {
     }, [word]);
 
     useEffect(() => {
-      const userDb: User | undefined = db.find(entry => entry.user === user);
-      if (userDb) {
-        setWordsLearned(userDb.wordsLearned || []);                               //Busca un usuario que coincida con los datos del LogIn.
-      }                                                                           //Si encuentra a dicho usuario mostrara las palabras aprendidas del mismo.
-      const userWords = localStorage.getItem(`learnedWords_${user}`);             //Las palabras aprendidas se almacenan en localStorage utilizando "learnedWords_${user}".
-      if (userWords) {                                                            //Si hay palabras estas son almacenadas  en un JSON.
-        setWordsLearned(JSON.parse(userWords));
+      const userData = JSON.parse(localStorage.getItem("userData")!);
+      if (userData && userData.wordsLearned) {
       }
     }, [user]);
 
@@ -146,7 +131,7 @@ return (
       <div className="words-learned-container">
           <p>Palabras Aprendidas por el Usuario:</p>
           <ul>
-            {wordsLearned.map((word, index) => (
+            {Array.from(wordsLearned).map((word, index) => (
               <li key={index}>
                 <span
                   className={highlightedWord === word ? 'highlighted' : ''}
@@ -196,6 +181,7 @@ return (
           </span>
         )}
         )}
+        
       </div>
       {/*CONECTAR Y USAR LA API*/}
     </div>
@@ -206,7 +192,7 @@ return (
         isOpen={isModalOpen}
         closeModal={() => setIsModalOpen(false)}
       />
-      {wordsLearned.map((word, index) => (
+      {Array.from(wordsLearned).map((word, index) => (
     <li key={index}>
     {word} 
     <button onClick={() => removeWord(word)}>Eliminar</button>
@@ -215,5 +201,4 @@ return (
   </>
   )
 }
-
 export default App;
