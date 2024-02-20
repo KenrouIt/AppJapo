@@ -4,7 +4,7 @@ import hanamichiImg from '../../assets/hanamichi.jpg';
 import japonImg from '../../assets/japon.png';
 import WordModal from '../../DefModal';
 import { Navigate, useNavigate } from 'react-router-dom';
-import db, { User } from '../../DataBase/usersDb';
+//import db, { User } from '../../DataBase/usersDb';
 
 function App() {
   const isLoggedIn = !!sessionStorage.getItem("user");
@@ -118,6 +118,8 @@ function App() {
 
 return (
   <>
+
+
   <h1>Welcome: {user} </h1> 
   <button onClick={handleLogout}>Volver al Login</button>
     <div>

@@ -1,3 +1,4 @@
+import { MouseEventHandler } from 'react';
 import Modal from 'react-modal';
 
 interface ModalProps {
@@ -6,7 +7,7 @@ interface ModalProps {
     isOpen: boolean
     closeModal: (any)
     className: string
-    onAddWord: (any) 
+    onAddWord: MouseEventHandler<HTMLButtonElement>
 }
 
 function WordModal({ word, definition, isOpen, closeModal, className, onAddWord }: ModalProps ) {
@@ -24,5 +25,4 @@ function WordModal({ word, definition, isOpen, closeModal, className, onAddWord 
       </Modal>
     );
   }
-  
-  export default WordModal;
+export default WordModal;
