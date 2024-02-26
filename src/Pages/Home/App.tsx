@@ -3,7 +3,8 @@ import './App.css';
 import hanamichiImg from '../../assets/hanamichi.jpg';
 import japonImg from '../../assets/japon.png';
 import WordModal from '../../DefModal';
-import { Navigate, useNavigate } from 'react-router-dom';
+import {BrowserRouter as Routes, Navigate, useNavigate } from 'react-router-dom';
+import NavBar from '../../NavBar/navBar';
 //import db, { User } from '../../DataBase/usersDb';
 
 function App() {
@@ -80,7 +81,7 @@ function App() {
   const handleLearnedWordClick = (word: string) => {
   setWord(word);
   setIsModalOpen(true);
-};
+  };
 
   useEffect(() => {
     async function searchWord() {
@@ -118,10 +119,10 @@ function App() {
 
 return (
   <>
-
-
-  <h1>Welcome: {user} </h1> 
-  <button onClick={handleLogout}>Volver al Login</button>
+    
+    <h1>Welcome: {user} </h1> 
+    <button onClick={handleLogout}>Volver al Login</button>
+    <NavBar />
     <div>
       <a href="https://youtu.be/dQw4w9WgXcQ?si=oWiKbvsS_-vc3-2d" target="_blank">
         <img src={japonImg} className="logo" alt="Vite logo" />
