@@ -3,7 +3,7 @@ import './App.css';
 import hanamichiImg from '../../assets/hanamichi.jpg';
 import japonImg from '../../assets/japon.png';
 import WordModal from '../../DefModal';
-import {BrowserRouter as Routes, Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import NavBar from '../../NavBar/navBar';
 //import db, { User } from '../../DataBase/usersDb';
 
